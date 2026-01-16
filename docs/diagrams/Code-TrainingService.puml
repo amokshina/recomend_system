@@ -1,0 +1,49 @@
+@startuml
+title Training Service - Code/Class Diagram (C4 L4)
+
+class TrainEndpoint {
+  +POST /train()
+}
+
+class TrainingService {
+  +train_restaurants()
+  +train_dishes()
+  +save_artifacts()
+}
+
+class InteractionQuery {
+  +load_restaurant_interactions()
+  +load_dish_interactions()
+  +load_test_split()
+}
+
+class InteractionMatrixBuilder {
+  +build_user_item_matrix()
+  +build_mappings()
+}
+
+class ALSModelTrainer {
+  +fit(matrix)
+  +get_user_factors()
+  +get_item_factors()
+}
+
+class MetricsCalculator {
+  +recall_at_k()
+  +ndcg_at_k()
+  +evaluate_topk()
+}
+
+class ArtifactRepository {
+  +save_joblib(path, blob)
+  +load_joblib(path)
+}
+
+TrainEndpoint --> TrainingService : calls
+TrainingService --> InteractionQuery : reads data
+TrainingService --> InteractionMatrixBuilder : builds CSR
+TrainingService --> ALSModelTrainer : fits ALS
+TrainingService --> MetricsCalculator : evaluates
+TrainingService --> ArtifactRepository : saves artifacts
+
+@enduml

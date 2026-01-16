@@ -1,0 +1,24 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Recommender Service - Container Diagram (C4 L2)
+
+Person(customer, "Customer")
+System_Ext(food_backend, "Food Delivery Backend", "Запрашивает рекомендации")
+
+System_Boundary(recsys_boundary, "Recommender System") {
+
+  Container(api, "Recommender API", "Python + FastAPI", "REST API: /health, /train, /recommend/restaurants, /recommend/dishes")
+  ContainerDb(db, "PostgreSQL", "PostgreSQL", "Хранит подготовленные таблицы и витрины взаимодействий")
+  Container(artifacts, "Artifacts Storage", "Volume (files)", "Хранит обученные модели ALS (*.joblib)")
+  Container(data, "Dataset Storage", "Volume (CSV)", "orders.csv (Kaggle), используется для оффлайн загрузки")
+}
+
+Rel(customer, food_backend, "Использует приложение", "HTTPS")
+Rel(food_backend, api, "Запрос рекомендаций", "HTTP/JSON")
+
+Rel(api, db, "Читает/пишет данные", "SQL")
+Rel(api, artifacts, "Сохраняет/читает модели", "Filesystem")
+Rel(data, api, "Оффлайн загрузка датасета (prepare_kaggle_dataset.py)", "Filesystem")
+
+@enduml

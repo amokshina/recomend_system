@@ -1,0 +1,34 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Recommender API - Component Diagram (C4 L3)
+
+Container_Boundary(api_boundary, "Container: Recommender API (FastAPI)") {
+  Component(controller, "API Controllers (FastAPI routes)", "Python/FastAPI", "HTTP endpoints: /health, /train, /recommend/restaurants, /recommend/dishes")
+  Component(train_service, "Training Service", "Python", "Builds interaction matrices, trains ALS, computes metrics, saves artifacts")
+  Component(rec_service, "Recommendation Service", "Python", "Loads ALS artifacts, computes scores, returns top-K")
+  Component(data_prep, "Dataset Preparation Script", "Python", "Parses CSV, normalizes fields, writes tables: orders/restaurants/order_items + interaction views")
+  Component(repo, "Data Access Layer", "SQLAlchemy", "Reads/writes Postgres tables and interaction views")
+  Component(model_store, "Model Store", "joblib + filesystem", "Stores/loads als_restaurants.joblib and als_dishes.joblib")
+  Component(metrics, "Metrics Calculator", "Python", "Recall@K and NDCG@K for offline evaluation")
+}
+
+ContainerDb(db, "PostgreSQL", "PostgreSQL", "orders, order_items, restaurants, user_*_interactions")
+Container(artifacts, "Artifacts Storage", "Volume (files)", "*.joblib")
+
+Rel(controller, train_service, "Calls train", "in-process")
+Rel(controller, rec_service, "Calls recommend", "in-process")
+
+Rel(train_service, repo, "Loads data", "SQLAlchemy")
+Rel(train_service, metrics, "Computes metrics", "in-process")
+Rel(train_service, model_store, "Saves artifacts", "joblib")
+
+Rel(rec_service, repo, "May check DB (user/history)", "SQLAlchemy")
+Rel(rec_service, model_store, "Loads artifacts", "joblib")
+
+Rel(data_prep, repo, "Writes prepared tables", "SQLAlchemy")
+
+Rel(repo, db, "SQL", "SQL")
+Rel(model_store, artifacts, "Read/Write", "files")
+
+@enduml

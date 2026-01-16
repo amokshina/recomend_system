@@ -1,0 +1,23 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title Recommender Service - Context Diagram (C4 L1)
+
+Person(customer, "Customer", "Пользователь приложения доставки еды")
+Person(dev, "ML Engineer", "Запускает загрузку датасета и обучение модели")
+
+System_Ext(food_backend, "Food Delivery Backend", "Основной бэкенд сервиса доставки")
+System_Boundary(recsys_boundary, "Recommender System") {
+  System(recsys, "Recommender Service", "FastAPI микросервис", "Персональные рекомендации ресторанов и блюд")
+}
+
+System_Ext(kaggle, "Kaggle Dataset (CSV)", "Food Delivery Order History Data", "Источник данных для демо/обучения")
+System_Ext(postman, "Postman", "Набор API тестов", "Проверка /health, /train, /recommend/*")
+
+Rel(customer, food_backend, "Запрашивает рекомендации / оформляет заказы", "HTTPS")
+Rel(food_backend, recsys, "Получает рекомендации (top-K)", "HTTP/JSON")
+Rel(dev, recsys, "Запускает подготовку данных и обучение", "HTTP (/train) и CLI скрипты")
+Rel(kaggle, recsys, "Данные загружаются оффлайн", "CSV")
+Rel(postman, recsys, "Дергает API для проверки", "HTTP/JSON")
+
+@enduml

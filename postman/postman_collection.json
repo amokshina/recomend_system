@@ -1,0 +1,84 @@
+{
+  "info": {
+    "name": "Food Recommender Service",
+    "_postman_id": "b6b3a6e0-8f8f-4f35-9c9b-1d2c4a8d9a01",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Train (ALS)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/train",
+          "host": ["{{baseUrl}}"],
+          "path": ["train"]
+        }
+      }
+    },
+    {
+      "name": "Recommend Restaurants (personalized)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/recommend/restaurants?user_id={{userId}}&k=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["recommend", "restaurants"],
+          "query": [
+            { "key": "user_id", "value": "{{userId}}" },
+            { "key": "k", "value": "10" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Recommend Dishes (personalized)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/recommend/dishes?user_id={{userId}}&k=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["recommend", "dishes"],
+          "query": [
+            { "key": "user_id", "value": "{{userId}}" },
+            { "key": "k", "value": "10" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Recommend Restaurants (cold start)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/recommend/restaurants?k=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["recommend", "restaurants"],
+          "query": [
+            { "key": "k", "value": "10" }
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000" },
+    { "key": "userId", "value": "PUT_USER_ID_HERE" }
+  ]
+}
